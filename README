@@ -1,0 +1,104 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2665
+
+" Html macros and mappings for:
+" ------------------------------------------
+"
+"    *  Closing        an opening tag
+"    *  Wrapping     text with tags
+"    *  Increasing    the weight of header tags (<h1>...)
+"    *  Formatting    text inside a pair of tags
+"    *  Rearranging  <tag> content </tag> vertically
+"    *  Stripping       outer tags
+"    *  'Spacing'       vertically the content of a pair of tags
+"
+" 1. Close an opening tag
+" -----------------------
+"
+"     >> : <tag> newline </tag> (write quickly a second > after the first one)
+"     >/ : <tag>         </tag>
+"     <? : <?php             ?>
+"
+" 2. Wrapping:
+" ------------
+"
+"         +-----------+-------------------+
+"         | paragraph | WORD or selection |
+" +-------+-----------+-------------------+
+" | <ul>  |    @u     |        \u         |
+" | <ol>  |    @o     |        \o         |
+" | <p>   |    @p     |        \p         |
+" | <div> |    @d     |        \d         |
+" +-------+-----------+-------------------+
+"
+" Note: \u and \o work on fully selected lines only
+"
+" Note: mnemo for paragraphs and lines: wrap @ll
+"
+" Note: You can use a count with the \ mappings
+"
+"              +------+-------------------+
+"              | line | WORD or selection |
+" +------------+------+-------------------+
+" | <td>       |  @t  |        \t         |
+" | <a>        |  @a  |        \a         |
+" | <span>     |  @s  |        \s         |
+" | <h1>       |  @h  |        \h         |
+" | <li>       |  @l  |        \l         |
+" | <!-- -->   |  @c  |        \c         |
+" | <em>       |  @e  |        \e         |
+" | <strong>   |  @b  |        \b         |
+" +------------+------+-------------------+
+"
+" 3. Insert an image
+" ------------------
+"
+"     @i (<img src='X' alt='' title='' />)
+"
+" 4. Set the class of a tag
+" -------------------------
+"
+"     :Class ul         -> <ul>                 (default)
+"     :Class ul bg_blue -> <ul class='bg_blue'>
+"
+" Note: Try using :C or :Cl or... instead of :Class. Depending on the
+"       installed plugins, a shorter or longer abbreviation might work.
+"
+" Shortcuts: (:C shortcut)
+"     d,   s,    u,  o,  h,  l,  t,  i,   e,  b
+"     div, span, ul, ol, h1, li, td, img, em, strong
+"
+" Note: If you don't want to write a tag manually, you can use <tab>
+"       after :Class to autocomplete your tag.
+"       (put a space after :Class before hitting <tab>)
+"
+" 5. <hn -> <hn+1 (Use after a @h or \h)
+" --------------------------------------
+"
+"     @j (mnemo: j is just besides h on the keyboard)
+"
+" 6. gq inside a pair of tags
+" ---------------------------
+"
+"     @g for standard tags
+"     \g for <!-- --> or <?php ?>
+"
+" 7. Rearrange <tag> content </tag> vertically
+" --------------------------------------------
+"
+"     @r for standard tags
+"     \r for <!-- --> or <?php ?>
+"
+" 8. Strip outer tags
+" -------------------
+"
+"     @x for standard tags
+"     \x for <!-- --> or <?php ?>
+"
+" 9. 'Space' vertically the content of a pair of tags
+" ---------------------------------------------------
+"
+"     @m for standard tags        (mnemo: 
+)
+"     \m for <!-- --> or <?php ?>
+"
+" A detailed help is in the comments of the file itself!
