@@ -38,6 +38,9 @@
 "
 " Note: If you must use @u, @o, @p, @d or \u, \o till the eof,
 "       be 'careful' to add an empty line at the eof
+"
+" Note: 7@p won't work if one of the paragraphs starts with a one letter word
+"       (ex: I). Same for <> 7 or another macro or on words.
 " }}}1
 
 " 1. Close an opening tag {{{1
@@ -65,20 +68,34 @@
 "
 " Note: You can use a count with the \ mappings
 "
-"            +------+-------------------+
-"            | line | WORD or selection |
-" +----------+------+-------------------+
-" | <td>     |  @t  |        \t         |
-" | <a>      |  @a  |        \a         |
-" | <span>   |  @s  |        \s         |
-" | <h1>     |  @h  |        \h         |
-" | <i>      |  @i  |        \i         |
-" | <b>      |  @b  |        \b         |
-" | <li>     |  @l  |        \l         |
-" | <!-- --> |  @c  |        \c         |
-" +----------+------+-------------------+
+"              +------+-------------------+
+"              | line | WORD or selection |
+" +------------+------+-------------------+
+" | <td>       |  @t  |        \t         |
+" | <a>        |  @a  |        \a         |
+" | <span>     |  @s  |        \s         |
+" | <h1>       |  @h  |        \h         |
+" | <li>       |  @l  |        \l         |
+" | <!-- -->   |  @c  |        \c         |
+" | <em>       |  @e  |        \e         |
+" | <strong>   |  @b  |        \b         |
 "
-" 3. Set the class of a tag {{{1
+"   TODO:
+"
+" | <fieldset> |  @f  |        \f         |
+" | <kbd>      |  @k  |        \k         |
+" | <noscript> |  @n  |        \n         |
+" | <var>      |  @v  |        \v         |
+" +------------+------+-------------------+
+"
+" TODO: <meta> @m
+"
+" 3. Insert an image {{{1
+" -----------------------
+"
+"     @i (<img src='X' alt='' title='' />)
+"
+" 4. Set the class of a tag {{{1
 " ------------------------------
 "
 "     :Class ul         -> <ul>                 (default)
@@ -87,34 +104,38 @@
 " Note: Try using :C or :Cl or... instead of :Class. Depending on the
 "       installed plugins, a shorter or longer abbreviation might work.
 "
-" Note: If you don't want to write a long tag manually, you can use <tab>
+" Shortcuts: (:C shortcut)
+"     d,   s,    u,  o,  h,  l,  t,  i,   e,  b
+"     div, span, ul, ol, h1, li, td, img, em, strong
+"
+" Note: If you don't want to write a tag manually, you can use <tab>
 "       after :Class to autocomplete your tag.
 "       (put a space after :Class before hitting <tab>)
 "
-" 4. <hn -> <hn+1 (Use after a @h or \h) {{{1
+" 5. <hn -> <hn+1 (Use after a @h or \h) {{{1
 " -------------------------------------------
 "
 "     @j (mnemo: j is just besides h on the keyboard)
 "
-" 5. gq inside a pair of tags {{{1
+" 6. gq inside a pair of tags {{{1
 " --------------------------------
 "
 "     @g for standard tags
 "     \g for <!-- --> or <?php ?>
 "
-" 6. Rearrange <tag> content </tag> vertically {{{1
+" 7. Rearrange <tag> content </tag> vertically {{{1
 " -------------------------------------------------
 "
 "     @r for standard tags
 "     \r for <!-- --> or <?php ?>
 "
-" 7. Strip outer tags {{{1
+" 8. Strip outer tags {{{1
 " ------------------------
 "
 "     @x for standard tags
 "     \x for <!-- --> or <?php ?>
 "
-" 8. 'Space' vertically the content of a pair of tags {{{1
+" 9. 'Space' vertically the content of a pair of tags {{{1
 " --------------------------------------------------------
 "
 "     @m for standard tags        (mnemo: )
@@ -153,7 +174,7 @@ endif
 
 " <a>
 if !exists("b:a_class")
-    let b:a_class = " href=''"
+    let b:a_class = ''
 endif
 
 " <span>
@@ -166,12 +187,17 @@ if !exists("b:h1_class")
     let b:h1_class = ''
 endif
 
-" <i>
+" <img>
 if !exists("b:i_class")
     let b:i_class = ''
 endif
 
-" <b>
+" <em>
+if !exists("b:em_class")
+    let b:em_class = ''
+endif
+
+" <strong>
 if !exists("b:b_class")
     let b:b_class = ''
 endif
@@ -230,9 +256,9 @@ endfunction
 
 function! Init_a()
 
-    let @a="I<a" . b:a_class . "> \<end> </a>\<esc>+EB"
-    nnoremap <buffer> \£a ciW<a<esc>:exe 'norm a' . b:a_class . ">   </a>\evitholp2EB"<cr>
-    vnoremap <buffer> <silent> \a c<a<esc>:exe 'norm a' . b:a_class . ">   </a>\evitholgpvatov:s/\\s\\+$//ge\r=atvatv"<cr>
+    let @a="^y$i<a href='\<esc>pa'" . b:a_class . "> \<end> </a>\<esc>+EB"
+    nnoremap <buffer> \£a ciW<a href=''<esc>gP:exe 'norm a' . b:a_class . ">   </a>\evitholp2EB"<cr>
+    vnoremap <buffer> <silent> \a c<a href=''<esc>gP:exe 'norm a' . b:a_class . ">   </a>\evitholgpvatov:s/\\s\\+$//ge\r=atvatv"<cr>
 
 endfunction
 
@@ -254,17 +280,23 @@ endfunction
 
 function! Init_i()
 
-    let @i="I<i" . b:i_class . "> \<end> </i>\<esc>+EB"
-    nnoremap <buffer> \£i ciW<i<esc>:exe 'norm a' . b:i_class . ">   </i>\evitholp2EB"<cr>
-    vnoremap <buffer> <silent> \i c<i<esc>:exe 'norm a' . b:i_class . ">   </i>\evitholgpvatov:s/\\s\\+$//ge\r=atvatv"<cr>
+    let @i="i<img src='' alt='' title=''" . b:i_class . " />\<esc>`[2Ei"
+
+endfunction
+
+function! Init_em()
+
+    let @e="I<em" . b:em_class . "> \<end> </em>\<esc>+EB"
+    nnoremap <buffer> \£e ciW<em<esc>:exe 'norm a' . b:em_class . ">   </em>\evitholp2EB"<cr>
+    vnoremap <buffer> <silent> \e c<em<esc>:exe 'norm a' . b:em_class . ">   </em>\evitholgpvatov:s/\\s\\+$//ge\r=atvatv"<cr>
 
 endfunction
 
 function! Init_b()
 
-    let @b="I<b" . b:b_class . "> \<end> </b>\<esc>+EB"
-    nnoremap <buffer> \£b ciW<b<esc>:exe 'norm a' . b:b_class . ">   </b>\evitholp2EB"<cr>
-    vnoremap <buffer> <silent> \b c<b<esc>:exe 'norm a' . b:b_class . ">   </b>\evitholgpvatov:s/\\s\\+$//ge\r=atvatv"<cr>
+    let @b="I<strong" . b:b_class . "> \<end> </strong>\<esc>+EB"
+    nnoremap <buffer> \£b ciW<strong<esc>:exe 'norm a' . b:b_class . ">   </strong>\evitholp2EB"<cr>
+    vnoremap <buffer> <silent> \b c<strong<esc>:exe 'norm a' . b:b_class . ">   </strong>\evitholgpvatov:s/\\s\\+$//ge\r=atvatv"<cr>
 
 endfunction
 
@@ -285,6 +317,7 @@ call Init_a   ()
 call Init_span()
 call Init_h1  ()
 call Init_i   ()
+call Init_em  ()
 call Init_b   ()
 call Init_li  ()
 
@@ -293,7 +326,7 @@ call Init_li  ()
 
 function! SetClass(tag, ...)
 
-    if 'ul' == a:tag
+    if 'ul' == a:tag || 'u' == a:tag
 
         if !exists("a:1")
             let b:ul_class = ''
@@ -303,7 +336,7 @@ function! SetClass(tag, ...)
 
         call Init_ul()
 
-    elseif 'ol' == a:tag
+    elseif 'ol' == a:tag || 'o' == a:tag
 
         if !exists("a:1")
             let b:ol_class = ''
@@ -323,7 +356,7 @@ function! SetClass(tag, ...)
 
         call Init_p()
 
-    elseif 'div' == a:tag
+    elseif 'div' == a:tag || 'd' == a:tag
 
         if !exists("a:1")
             let b:div_class = ''
@@ -333,7 +366,7 @@ function! SetClass(tag, ...)
 
         call Init_div()
 
-    elseif 'td' == a:tag
+    elseif 'td' == a:tag || 't' == a:tag
 
         if !exists("a:1")
             let b:td_class = ''
@@ -346,14 +379,14 @@ function! SetClass(tag, ...)
     elseif 'a' == a:tag
 
         if !exists("a:1")
-            let b:a_class = " href=''"
+            let b:a_class = ''
         else
-            let b:a_class = " href='' class='" . a:1 . "'"
+            let b:a_class = " class='" . a:1 . "'"
         endif
 
         call Init_a()
 
-    elseif 'span' == a:tag
+    elseif 'span' == a:tag || 's' == a:tag
 
         if !exists("a:1")
             let b:span_class = ''
@@ -363,7 +396,7 @@ function! SetClass(tag, ...)
 
         call Init_span()
 
-    elseif 'h1' == a:tag
+    elseif 'h1' == a:tag || 'h' == a:tag
 
         if !exists("a:1")
             let b:h1_class = ''
@@ -373,7 +406,7 @@ function! SetClass(tag, ...)
 
         call Init_h1()
 
-    elseif 'i' == a:tag
+    elseif 'img' == a:tag || 'i' == a:tag
 
         if !exists("a:1")
             let b:i_class = ''
@@ -383,7 +416,17 @@ function! SetClass(tag, ...)
 
         call Init_i()
 
-    elseif 'b' == a:tag
+    elseif 'em' == a:tag || 'e' == a:tag
+
+        if !exists("a:1")
+            let b:em_class = ''
+        else
+            let b:em_class = " class='" . a:1 . "'"
+        endif
+
+        call Init_i()
+
+    elseif 'strong' == a:tag || 'b' == a:tag
 
         if !exists("a:1")
             let b:b_class = ''
@@ -393,7 +436,7 @@ function! SetClass(tag, ...)
 
         call Init_b()
 
-    elseif 'li' == a:tag
+    elseif 'li' == a:tag || 'l' == a:tag
 
         if !exists("a:1")
             let b:li_class = ''
@@ -411,7 +454,7 @@ command! -complete=customlist,HtmlTags -nargs=+ Class :call SetClass(<f-args>)
 
 function! HtmlTags(A,L,P)
 
-    return ['div ', 'span ', 'ul ', 'ol ', 'h1 ', 'li ', 'td ', 'a ', 'i ', 'b ', 'p ']
+    return ['div ', 'span ', 'ul ', 'ol ', 'h1 ', 'li ', 'td ', 'img ', 'em ', 'strong ', 'a ', 'p ']
 
 endfunction
 
@@ -446,7 +489,7 @@ nnoremap <buffer> \t @='\£t'<cr>
 nnoremap <buffer> \a @='\£a'<cr>
 nnoremap <buffer> \s @='\£s'<cr>
 nnoremap <buffer> \h @='\£h'<cr>
-nnoremap <buffer> \i @='\£i'<cr>
+nnoremap <buffer> \e @='\£e'<cr>
 nnoremap <buffer> \b @='\£b'<cr>
 nnoremap <buffer> \l @='\£l'<cr>
 nnoremap <buffer> \c @='\£c'<cr>
