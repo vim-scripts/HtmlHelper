@@ -424,7 +424,7 @@ function! SetClass(tag, ...)
             let b:em_class = " class='" . a:1 . "'"
         endif
 
-        call Init_i()
+        call Init_em()
 
     elseif 'strong' == a:tag || 'b' == a:tag
 
